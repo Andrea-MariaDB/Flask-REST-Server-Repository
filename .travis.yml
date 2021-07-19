@@ -1,0 +1,24 @@
+dist: xenial
+
+language: python
+
+python:
+  - "3.7"
+
+env:
+  global:
+    - FLASK_ENV=testing
+    - FLASK_DEBUG=False
+
+install:
+  - pip install --upgrade pip setuptools pipenv
+  - pipenv install
+  - pipenv install --dev
+
+script:
+  - pipenv run vulture --min-confidence 61 .
+  - pipenv run pylint --rcfile .pylintrc manage.py app
+  - pipenv run pytest --cov-config=.coveragerc --cov-report xml --cov app app/test
+
+after_success:
+  - pipenv run codecov
